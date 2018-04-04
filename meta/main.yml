@@ -1,0 +1,17 @@
+---
+dependencies: []
+galaxy_info:
+  author: "github@matthias-simonis.de"
+  description: "A role to locally build a Docker image and push it to a registry."
+  company: "gumbatz"
+  min_ansible_version: 2.4
+  license: "license (BSD, MIT)"
+  platforms:
+  - name: Debian
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - all
+  categories:
+  - docker

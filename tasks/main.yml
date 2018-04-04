@@ -1,0 +1,97 @@
+---
+- name: Check if docker-py is installed
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "pip freeze | grep docker-py== | wc -l"
+  register: docker_py_installed
+
+- name: fail
+  run_once: true
+  fail:
+    msg: "You need to install docker-py: pip install docker-py"
+  when: docker_py_installed.stdout == "0"
+
+- name: Print current image
+  run_once: true
+  debug:
+    msg: "Building image: {{build_and_push_image_name}}"
+  when: build_and_push_debug == true
+
+- name: Check if Image exists
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker image history {{build_and_push_image_name}}:{{build_and_push_image_version}} | wc -l"
+  register: image_exists
+
+- name: Build the Image
+  run_once: true
+  local_action:
+    module: docker_image
+    path: "{{build_and_push_docker_file_path}}"
+    name: "{{build_and_push_image_name}}"
+    tag: "{{build_and_push_image_version}}"
+  when: image_exists.stdout == "0"
+
+- name: Tag with Version
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
+  - "{{build_and_push_image_version.split('.')[0]}}"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_tag_versions == true
+
+- name: Tag latest
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "latest"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_tag_latest == true
+
+- name: Push latest
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker push {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "latest"
+  - "{{build_and_push_image_version}}"
+  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
+  - "{{build_and_push_image_version.split('.')[0]}}"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_tag_latest == true
+  - build_and_push_push == true
+
+- name: Push version
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker push {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "{{build_and_push_image_version}}"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_push == true
+
+- name: Push versions
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker push {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
+  - "{{build_and_push_image_version.split('.')[0]}}"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_tag_versions == true
+  - build_and_push_push == true
