@@ -1,7 +1,6 @@
 ## Build and Push Docker Images
 
-This role lets you easy build (lokal) and push a docker image.
-Just prepare an Image (Dockerfile) in a directory within your playbook and configure the role with parameters.
+This role lets you easy build (lokal) and push a docker image. Just prepare an Image (Dockerfile) in a directory within your playbook and configure the role with parameters.
 
 It will skip te build, if the image already exists locally. So it is important, that you change the Version if you want to build a new image.
 
@@ -12,10 +11,12 @@ docker-py
 
 It will fail, if the dependency is not installed.
 
+If you don't want to push your image into a registry, use the transfer function of this playbook. The image will be exported (docker save), transfered to the server and imported (docker load). It will even tag it on the server as it would be in a registry.
+
 ## Changelog
 
 v2.0.0 (06.04.2018)
- * You can now also Transfer an Image to a server without going through a registry.
+ * You can now also transfer an image to a server without going through a registry.
 
 ## Installation
 
