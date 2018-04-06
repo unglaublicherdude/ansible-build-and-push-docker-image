@@ -1,0 +1,80 @@
+---
+- name: Ensure tmp directory exists
+  run_once: yes
+  local_action:
+    module: file
+    state: directory
+    path: "{{role_path}}/tmp/"
+  when:
+  - build_and_push_transfer == true
+
+- name: Archive List Exchange Service
+  run_once: yes
+  local_action:
+    module: shell
+    _raw_params: "docker save {{build_and_push_image_name}}:{{build_and_push_image_version}} -o '{{role_path}}/tmp/image.tar'"
+  when:
+    - build_and_push_transfer == true
+
+- name: Ensure Exchange Directory Common
+  file:
+    state: directory
+    path: "{{build_and_push_transfer_tmp_image_dir}}"
+  when:
+    - build_and_push_transfer == true
+
+- name: Copy Image to Server
+  copy:
+    src: "{{role_path}}/tmp/image.tar"
+    dest: "{{build_and_push_transfer_tmp_image_dir}}/image.tar"
+  when:
+    - build_and_push_transfer == true
+
+- name: Load Docker Image
+  shell: "cat {{build_and_push_transfer_tmp_image_dir}}/image.tar | docker load"
+  when:
+  - build_and_push_transfer == true
+
+- name: Remove temporary Image file from remote host
+  file:
+    state: absent
+    path: "{{build_and_push_transfer_tmp_image_dir}}/image.tar"
+  when:
+  - build_and_push_transfer == true
+
+- name: Remove temporary Image file from localhost
+  run_once: yes
+  local_action:
+    module: file
+    state: absent
+    path: "{{role_path}}/tmp/image.tar"
+  when:
+  - build_and_push_transfer == true
+
+- name: Remove tmp directory
+  run_once: yes
+  local_action:
+    module: file
+    state: absent
+    path: "{{role_path}}/tmp/"
+  when:
+  - build_and_push_transfer == true
+
+- name: Tag latest
+  shell:
+    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "latest"
+  when:
+  - build_and_push_transfer == true
+  - build_and_push_tag_latest == true
+
+- name: Tag with Version
+  shell:
+    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
+  - "{{build_and_push_image_version.split('.')[0]}}"
+  when:
+  - build_and_push_transfer == true
+  - build_and_push_tag_versions == true

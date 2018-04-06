@@ -12,6 +12,11 @@ docker-py
 
 It will fail, if the dependency is not installed.
 
+## Changelog
+
+v2.0.0 (06.04.2018)
+ * You can now also Transfer an Image to a server without going through a registry.
+
 ## Installation
 
 ```ansible-galaxy install git+https://github.com/unglaublicherdude/ansible-build-and-push-docker-image.git```
@@ -63,3 +68,17 @@ You don't want the images to get Pushed?
     }
 ```
 The explizit Version is always build. It is needed for the version comarison.
+
+### Transfer without push to a registry
+
+```
+    - {
+      role: build-and-push-docker-image,
+      build_and_push_image_name: "registryhost.tld/image",
+      build_and_push_docker_file_path: "./files/docker/image",
+      build_and_push_image_version: "1.0.0",
+      build_and_push_push: false,
+      build_and_push_transfer: true,
+      build_and_push_transfer_tmp_image_dir: /tmp/docker/images # on the server
+    }
+```

@@ -1,0 +1,23 @@
+---
+- name: Tag with Version
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
+  - "{{build_and_push_image_version.split('.')[0]}}"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_tag_versions == true
+
+- name: Tag latest
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "latest"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_tag_latest == true

@@ -1,0 +1,13 @@
+---
+- name: Check if docker-py is installed
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "pip freeze | grep docker-py== | wc -l"
+  register: docker_py_installed
+
+- name: fail
+  run_once: true
+  fail:
+    msg: "You need to install docker-py: pip install docker-py"
+  when: docker_py_installed.stdout == "0"

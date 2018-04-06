@@ -1,0 +1,22 @@
+---
+- name: Print current image
+  run_once: true
+  debug:
+    msg: "Building image: {{build_and_push_image_name}}"
+  when: build_and_push_debug == true
+
+- name: Check if Image exists
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker image history {{build_and_push_image_name}}:{{build_and_push_image_version}} | wc -l"
+  register: image_exists
+
+- name: Build the Image
+  run_once: true
+  local_action:
+    module: docker_image
+    path: "{{build_and_push_docker_file_path}}"
+    name: "{{build_and_push_image_name}}"
+    tag: "{{build_and_push_image_version}}"
+  when: image_exists.stdout == "0"

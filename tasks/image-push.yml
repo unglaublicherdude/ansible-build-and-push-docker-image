@@ -1,0 +1,39 @@
+---
+- name: Push latest
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker push {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "latest"
+  - "{{build_and_push_image_version}}"
+  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
+  - "{{build_and_push_image_version.split('.')[0]}}"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_tag_latest == true
+  - build_and_push_push == true
+
+- name: Push version
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker push {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "{{build_and_push_image_version}}"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_push == true
+
+- name: Push versions
+  run_once: true
+  local_action:
+    module: shell
+    _raw_params: "docker push {{build_and_push_image_name}}:{{item}}"
+  with_items:
+  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
+  - "{{build_and_push_image_version.split('.')[0]}}"
+  when:
+  - image_exists.stdout == "0"
+  - build_and_push_tag_versions == true
+  - build_and_push_push == true
