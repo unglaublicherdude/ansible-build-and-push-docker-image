@@ -66,8 +66,7 @@
   with_items:
   - "latest"
   when:
-  - build_and_push_transfer == true
-  - build_and_push_tag_latest == true
+  - build_and_push_transfer == true and build_and_push_tag_latest == true
 
 - name: Tag with Version
   shell:
@@ -76,5 +75,4 @@
   - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
   - "{{build_and_push_image_version.split('.')[0]}}"
   when:
-  - build_and_push_transfer == true
-  - build_and_push_tag_versions == true
+  - build_and_push_transfer == true and build_and_push_tag_versions == true and build_and_push_image_version.split('.')|length > 1
