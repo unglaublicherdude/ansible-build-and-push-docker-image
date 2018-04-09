@@ -16,6 +16,8 @@ If you don't want to push your image into a registry, use the transfer function 
 ## Changelog
 
  * v2.0.1 (10.04.2018)
+   * Just some readme fixes.
+ * v2.0.1 (10.04.2018)
    * Check if version actually contains dots.
  * v2.0.0 (06.04.2018)
    * You can now also transfer an image to a server without going through a registry.
