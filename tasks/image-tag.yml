@@ -10,6 +10,7 @@
   when:
   - image_exists.stdout == "0"
   - build_and_push_tag_versions == true
+  - "{{build_and_push_image_version.split('.')|length}} > 1"
 
 - name: Tag latest
   run_once: true
