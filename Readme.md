@@ -103,3 +103,18 @@ The explizit Version is always build. It is needed for the version comarison.
       build_and_push_image_version: "latest"
     }
 ```
+### Handing build arguments to the Dockerfile
+
+```
+    - {
+      role: build-and-push-docker-image,
+      build_and_push_image_name: "registryhost.tld/image",
+      build_and_push_docker_file_path: "./files/docker/image",
+      build_and_push_image_version: "1.0.0",
+      build_and_push_args: 
+      {
+        some_password_from_the_vault: "{{some_password_from_the_vault}}",
+        myfancypath: "{{myfancypath}}"
+      }      
+    }
+```
