@@ -15,6 +15,8 @@ If you don't want to push your image into a registry, use the transfer function 
 
 ## Changelog
 
+ * v2.0.4 (16.07.2018)
+   * Added build argument passing to Dockerfile.
  * v2.0.3 (10.04.2018)
    * Added the ability to transfer an image pulled from a registry - without build.
  * v2.0.2 (10.04.2018)
