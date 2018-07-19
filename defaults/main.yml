@@ -10,4 +10,4 @@ build_and_push_tag_latest: true
 build_and_push_tag_versions: true
 build_and_push_transfer: false
 build_and_push_transfer_tmp_image_dir: /tmp/docker/images
-build_and_push_args: []
+build_and_push_args: {}
