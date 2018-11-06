@@ -14,6 +14,8 @@ It will fail, if the dependency is not installed.
 If you don't want to push your image into a registry, use the transfer function of this playbook. The image will be exported (docker save), transfered to the server and imported (docker load). It will even tag it on the server as it would be in a registry.
 
 ## Changelog
+ * v2.1.0 (06.11.2018)
+   * Add an argument to prevent pulling of images during the build process.
  * v2.0.5 (19.07.2018)
    * Add default argument for docker build arguments.
  * v2.0.4 (16.07.2018)

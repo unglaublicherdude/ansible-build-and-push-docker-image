@@ -20,6 +20,7 @@
     path: "{{build_and_push_docker_file_path}}"
     name: "{{build_and_push_image_name}}"
     tag: "{{build_and_push_image_version}}"
+    pull: "{{build_and_push_pull}}"
     buildargs: "{{build_and_push_args}}"
   when:
   - image_exists.stdout == "0" and build_and_push_image_build == true
