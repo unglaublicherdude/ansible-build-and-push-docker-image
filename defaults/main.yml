@@ -5,6 +5,7 @@ build_and_push_image_fallback_try_pull: true
 build_and_push_image_version: 0.0.0
 build_and_push_docker_file_path: ./files/docker/imagename
 build_and_push_debug: false
+build_and_push_pull: true
 build_and_push_push: true
 build_and_push_tag_latest: true
 build_and_push_tag_versions: true
