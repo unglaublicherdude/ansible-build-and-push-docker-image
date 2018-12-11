@@ -1,14 +1,21 @@
-- name: Check dependencies
+- name: Check dependencies {{build_and_push_image_name}}
   import_tasks: check-dependencies.yml
 
-- name: Build Image
+- name: Build Image {{build_and_push_image_name}}
   import_tasks: image-build.yml
 
-- name: Tag Image
+- name: Tag Image {{build_and_push_image_name}}
   import_tasks: image-tag.yml
 
-- name: Push Image
+- name: Push Image {{build_and_push_image_name}}
   import_tasks: image-push.yml
 
-- name: Transfer Image
-  import_tasks: image-transfer.yml
+- name: Transfer Image {{build_and_push_image_name}} with {{build_and_push_image_version}}
+  include_tasks: image-transfer.yml
+  when: build_and_push_new_image_tag == false
+
+- name: Transfer Image {{build_and_push_image_name}}:{{build_and_push_image_version}}
+  include_tasks: image-transfer.yml
+  vars: 
+    build_and_push_image_version: "{{build_and_push_new_image_tag}}"
+  when: build_and_push_new_image_tag != false

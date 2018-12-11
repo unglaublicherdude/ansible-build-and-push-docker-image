@@ -1,5 +1,5 @@
 ---
-- name: Ensure tmp directory exists
+- name: Ensure tmp directory exists {{build_and_push_image_name}}
   run_once: yes
   local_action:
     module: file
@@ -8,7 +8,7 @@
   when:
   - build_and_push_transfer == true
 
-- name: Archive List Exchange Service
+- name: Archive List Exchange Service {{build_and_push_image_name}}:{{build_and_push_image_version}}
   run_once: yes
   local_action:
     module: shell
@@ -16,33 +16,33 @@
   when:
     - build_and_push_transfer == true
 
-- name: Ensure Exchange Directory Common
+- name: Ensure Exchange Directory Common {{build_and_push_image_name}}
   file:
     state: directory
     path: "{{build_and_push_transfer_tmp_image_dir}}"
   when:
     - build_and_push_transfer == true
 
-- name: Copy Image to Server
+- name: Copy Image to Server {{build_and_push_image_name}}
   copy:
     src: "{{role_path}}/tmp/image.tar"
     dest: "{{build_and_push_transfer_tmp_image_dir}}/image.tar"
   when:
     - build_and_push_transfer == true
 
-- name: Load Docker Image
+- name: Load Docker Image {{build_and_push_image_name}}
   shell: "cat {{build_and_push_transfer_tmp_image_dir}}/image.tar | docker load"
   when:
   - build_and_push_transfer == true
 
-- name: Remove temporary Image file from remote host
+- name: Remove temporary Image file from remote host {{build_and_push_image_name}}
   file:
     state: absent
     path: "{{build_and_push_transfer_tmp_image_dir}}/image.tar"
   when:
   - build_and_push_transfer == true
 
-- name: Remove temporary Image file from localhost
+- name: Remove temporary Image file from localhost {{build_and_push_image_name}}
   run_once: yes
   local_action:
     module: file
@@ -51,7 +51,7 @@
   when:
   - build_and_push_transfer == true
 
-- name: Remove tmp directory
+- name: Remove tmp directory {{build_and_push_image_name}}
   run_once: yes
   local_action:
     module: file
@@ -60,7 +60,7 @@
   when:
   - build_and_push_transfer == true
 
-- name: Tag latest
+- name: Tag latest {{build_and_push_image_name}}
   shell:
     _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
   with_items:
@@ -68,7 +68,7 @@
   when:
   - build_and_push_transfer == true and build_and_push_tag_latest == true
 
-- name: Tag with Version
+- name: Tag with Version {{build_and_push_image_name}}
   shell:
     _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
   with_items:
