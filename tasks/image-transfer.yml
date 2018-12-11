@@ -1,68 +1,68 @@
 ---
 - name: Ensure tmp directory exists {{build_and_push_image_name}}
   run_once: yes
-  local_action:
-    module: file
+  file:
     state: directory
-    path: "{{role_path}}/tmp/"
+    path: "{{ role_path }}/tmp/"
+  delegate_to: localhost
   when:
   - build_and_push_transfer == true
 
 - name: Archive List Exchange Service {{build_and_push_image_name}}:{{build_and_push_image_version}}
   run_once: yes
-  local_action:
-    module: shell
-    _raw_params: "docker save {{build_and_push_image_name}}:{{build_and_push_image_version}} -o '{{role_path}}/tmp/image.tar'"
+  shell:
+    _raw_params: "docker save {{ build_and_push_image_name }}:{{ build_and_push_image_version }} -o '{{ role_path }}/tmp/image.tar'"
+  delegate_to: localhost
   when:
     - build_and_push_transfer == true
 
 - name: Ensure Exchange Directory Common {{build_and_push_image_name}}
   file:
     state: directory
-    path: "{{build_and_push_transfer_tmp_image_dir}}"
+    path: "{{ build_and_push_transfer_tmp_image_dir }}"
   when:
     - build_and_push_transfer == true
 
 - name: Copy Image to Server {{build_and_push_image_name}}
   copy:
-    src: "{{role_path}}/tmp/image.tar"
-    dest: "{{build_and_push_transfer_tmp_image_dir}}/image.tar"
+    src: "{{ role_path }}/tmp/image.tar"
+    dest: "{{ build_and_push_transfer_tmp_image_dir }}/image.tar"
   when:
     - build_and_push_transfer == true
 
-- name: Load Docker Image {{build_and_push_image_name}}
-  shell: "cat {{build_and_push_transfer_tmp_image_dir}}/image.tar | docker load"
+- name: Load Docker Image {{ build_and_push_image_name }}
+  shell: "cat {{ build_and_push_transfer_tmp_image_dir }}/image.tar | docker load"
   when:
   - build_and_push_transfer == true
 
 - name: Remove temporary Image file from remote host {{build_and_push_image_name}}
   file:
     state: absent
-    path: "{{build_and_push_transfer_tmp_image_dir}}/image.tar"
+    path: "{{ build_and_push_transfer_tmp_image_dir }}/image.tar"
   when:
   - build_and_push_transfer == true
 
 - name: Remove temporary Image file from localhost {{build_and_push_image_name}}
   run_once: yes
-  local_action:
-    module: file
+  file:
     state: absent
-    path: "{{role_path}}/tmp/image.tar"
+    path: "{{ role_path }}/tmp/image.tar"
+  delegate_to: localhost
   when:
   - build_and_push_transfer == true
 
 - name: Remove tmp directory {{build_and_push_image_name}}
   run_once: yes
-  local_action:
-    module: file
+  file:
     state: absent
-    path: "{{role_path}}/tmp/"
+    path: "{{ role_path }}/tmp/"
+  delegate_to: localhost
   when:
   - build_and_push_transfer == true
 
 - name: Tag latest {{build_and_push_image_name}}
   shell:
-    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+    _raw_params: "docker tag {{ build_and_push_image_name }}:{{ build_and_push_image_version }} {{ build_and_push_image_name }}:{{ item }}"
   with_items:
   - "latest"
   when:
@@ -70,9 +70,9 @@
 
 - name: Tag with Version {{build_and_push_image_name}}
   shell:
-    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+    _raw_params: "docker tag {{ build_and_push_image_name }}:{{ build_and_push_image_version }} {{ build_and_push_image_name }}:{{ item }}"
   with_items:
-  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
-  - "{{build_and_push_image_version.split('.')[0]}}"
-  when:
-  - build_and_push_transfer == true and build_and_push_tag_versions == true and build_and_push_image_version.split('.')|length > 1
+  - "{{ build_and_push_image_version.split('.')[0] }}.{{ build_and_push_image_version.split('.')[1] }}"
+  - "{{ build_and_push_image_version.split('.')[0] }}"
+  when: build_and_push_transfer == true and build_and_push_tag_versions == true and
+        build_and_push_image_version.split('.')|length > 1
