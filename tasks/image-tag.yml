@@ -1,49 +1,51 @@
 ---
 - name: Check if Image exists {{build_and_push_image_name}}
   run_once: true
-  local_action:
-    module: shell
-    _raw_params: "docker image history {{build_and_push_image_name}}:{{build_and_push_image_version}} | wc -l"
+  shell:
+    _raw_params: "docker image history {{ build_and_push_image_name }}:{{ build_and_push_image_version }} | wc -l"
+  delegate_to: localhost
   register: tag_image_exists
+  changed_when: false
 
-- name: if image does still not exist, try to pull it {{build_and_push_image_name}}
+- name: if image does still not exist, try to pull it {{ build_and_push_image_name }}
   run_once:
-  local_action:
-    module: shell
-    _raw_params: "docker pull {{build_and_push_image_name}}:{{build_and_push_image_version}}"
+  shell:
+    _raw_params: "docker pull {{ build_and_push_image_name }}:{{ build_and_push_image_version }}"
+  delegate_to: localhost
   when:
   - (tag_image_exists.stdout == "0" and build_and_push_image_fallback_try_pull == true)
 
 - name: Check if Image exists {{build_and_push_image_name}}
   run_once: true
-  local_action:
-    module: shell
-    _raw_params: "docker image history {{build_and_push_image_name}}:{{build_and_push_image_version}} | wc -l"
+  shell:
+    _raw_params: "docker image history {{ build_and_push_image_name }}:{{ build_and_push_image_version }} | wc -l"
+  delegate_to: localhost
   register: tag_image_exists
+  changed_when: false
 
 - name: fail {{build_and_push_image_name}}
   run_once: true
   fail:
-    msg: "Image does not exist {{build_and_push_image_name}}:{{build_and_push_image_version}}"
+    msg: "Image does not exist {{ build_and_push_image_name }}:{{ build_and_push_image_version }}"
   when:
   - tag_image_exists.stdout == "0"
 
 - name: Tag with Version {{build_and_push_image_name}}
   run_once: true
-  local_action:
-    module: shell
-    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+  shell:
+    _raw_params: "docker tag {{ build_and_push_image_name }}:{{ build_and_push_image_version }} {{ build_and_push_image_name }}:{{ item }}"
+  delegate_to: localhost
   with_items:
-  - "{{build_and_push_image_version.split('.')[0]}}.{{build_and_push_image_version.split('.')[1]}}"
-  - "{{build_and_push_image_version.split('.')[0]}}"
+  - "{{ build_and_push_image_version.split('.')[0] }}.{{ build_and_push_image_version.split('.')[1] }}"
+  - "{{ build_and_push_image_version.split('.')[0] }}"
   when:
   - image_exists.stdout == "0" and build_and_push_tag_versions == true and build_and_push_image_version.split('.')|length > 1 and build_and_push_new_image_tag == false
 
 - name: Tag latest {{build_and_push_image_name}}
   run_once: true
-  local_action:
-    module: shell
-    _raw_params: "docker tag {{build_and_push_image_name}}:{{build_and_push_image_version}} {{build_and_push_image_name}}:{{item}}"
+  shell:
+    _raw_params: "docker tag {{ build_and_push_image_name }}:{{ build_and_push_image_version }} {{ build_and_push_image_name }}:{{ item }}"
+  delegate_to: localhost
   with_items:
   - "latest"
   when:
