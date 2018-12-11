@@ -15,7 +15,7 @@ If you don't want to push your image into a registry, use the transfer function 
 
 ## Changelog
 
-* v2.1.0 (11.12.2018)
+* v2.2.0 (11.12.2018)
   * You can now retag the image before transfering it to the server.
     This can be helpfull, when you for example always want the git hash of the stack to be represented in the image.
 * v2.1.0 (06.11.2018)
